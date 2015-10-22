@@ -88,7 +88,10 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="hompus:PullDownToRefreshPanel">
-                        <StackPanel x:Name="PullDownContainer" HorizontalAlignment="Stretch">
+                        <StackPanel x:Name="PullDownContainer" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                            <StackPanel x:Name="RefreshingPanel" Background="{TemplateBinding Background}" Visibility="Collapsed">
+                                <ContentPresenter ContentTemplate="{TemplateBinding RefreshingTemplate}" />
+                            </StackPanel>
                             <Grid x:Name="PullingDownPanel" 
                                   Background="{TemplateBinding Background}" 
                                   Height="{TemplateBinding PullDistance}"
@@ -101,9 +104,6 @@
                                   Visibility="Collapsed">
                                 <ContentPresenter ContentTemplate="{TemplateBinding ReadyToReleaseTemplate}" VerticalAlignment="Center"/>
                             </Grid>
-                            <StackPanel x:Name="RefreshingPanel" Background="{TemplateBinding Background}" Visibility="Collapsed">
-                                <ContentPresenter ContentTemplate="{TemplateBinding RefreshingTemplate}" />
-                            </StackPanel>
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="ActivityStates">
                                     <VisualState x:Name="Inactive" />
@@ -130,176 +130,35 @@
             </Setter>
         </Style>
 
-        <Style TargetType="rlb:PullDownToRefreshPanel">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="PullingDownTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <TextBlock Margin="0,16,0,0"
-                                   Style="{StaticResource PhoneTextGroupHeaderStyle}"
-                                   TextAlignment="Center"
-                                   FontStyle="Italic"
-                                   Text="Pull down to refresh." />
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="ReadyToReleaseTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <TextBlock Margin="0,16,0,0"
-                                   Style="{StaticResource PhoneTextGroupHeaderStyle}"
-                                   TextAlignment="Center"
-                                   FontWeight="Bold"
-                                   Text="Release to refresh!" />
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="RefreshingTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <ProgressBar Margin="0,4,0,4"
-                                     IsIndeterminate="True" />
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="rlb:PullDownToRefreshPanel">
-                        <StackPanel x:Name="PullDownContainer"
-                                    HorizontalAlignment="Stretch">
-                            <StackPanel.Resources>
-                                <rlb:NegativeValueConverter x:Key="NegativeValueConverter" />
-                            </StackPanel.Resources>
-                            <StackPanel x:Name="PullingDownPanel"
-                                        Background="{TemplateBinding Background}"
-                                        Height="{TemplateBinding PullDistance}"
-                                        Opacity="{TemplateBinding PullFraction}"
-                                        Margin="{Binding PullDistance, RelativeSource={RelativeSource TemplatedParent},
-                                        Converter={StaticResource NegativeValueConverter}, ConverterParameter=Bottom}"
-                                        Visibility="Collapsed">
-                                <ContentPresenter ContentTemplate="{TemplateBinding PullingDownTemplate}" />
-                            </StackPanel>
-                            <StackPanel x:Name="ReadyToReleasePanel"
-                                        Background="{TemplateBinding Background}"
-                                        Height="{TemplateBinding PullDistance}"
-                                        Margin="{Binding PullDistance, RelativeSource={RelativeSource TemplatedParent},
-                                        Converter={StaticResource NegativeValueConverter}, ConverterParameter=Bottom}"
-                                        Visibility="Collapsed">
-                                <ContentPresenter ContentTemplate="{TemplateBinding ReadyToReleaseTemplate}" />
-                            </StackPanel>
-                            <StackPanel x:Name="RefreshingPanel"
-                                        Background="{TemplateBinding Background}"
-                                        Visibility="Collapsed">
-                                <ContentPresenter ContentTemplate="{TemplateBinding RefreshingTemplate}" />
-                            </StackPanel>
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="ActivityStates">
-                                    <VisualState x:Name="Inactive" />
-                                    <VisualState x:Name="PullingDown">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PullingDownPanel" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="ReadyToRelease">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ReadyToReleasePanel" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Refreshing">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RefreshingPanel" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                        </StackPanel>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </phone:PhoneApplicationPage.Resources>
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
-        <!--Pivot Control-->
-        <phone:Pivot Title="PULL DOWN TO REFRESH PANEL" Margin="0">
-            <!--Pivot item one-->
-            <phone:PivotItem Header="improved" Margin="-12,0">
-                <Grid>
-                    <hompus:PullDownToRefreshPanel x:Name="refreshPanel"
-                                                   RefreshRequested="refreshPanelRefreshRequested" 
-                                                   PullThreshold="200" 
-                                                   VerticalAlignment="Top" />
-                    <ItemsControl x:Name="imageList"
-                                  ItemsSource="{Binding ElementName=Page, Path=Images}">
-                        <ItemsControl.Template>
-                            <ControlTemplate TargetType="ItemsControl">
-                                <ScrollViewer Style="{StaticResource PullDownScrollViewer}" 
-                                              HorizontalScrollBarVisibility="Disabled">
-                                    <ItemsPresenter/>
-                                </ScrollViewer>
-                            </ControlTemplate>
-                        </ItemsControl.Template>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel Orientation="Vertical" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding}" Height="480" Width="480" Stretch="None" Margin="0,0,0,12" Tap="ImageOnTap"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Grid>
-            </phone:PivotItem>
-
-            <!--Pivot item two-->
-            <phone:PivotItem Header="original" Margin="-12,0"> 
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    
-                    <rlb:PullDownToRefreshPanel x:Name="originalRefreshPanel"
-                                                Grid.Row="0"
-                                                RefreshRequested="refreshPanelRefreshRequested" 
-                                                PullThreshold="200" 
-                                                VerticalAlignment="Top" />
-                    
-                    <ItemsControl x:Name="originalImageList"
-                                  ItemsSource="{Binding ElementName=Page, Path=Images}"
-                                  Grid.Row="1">
-                        <ItemsControl.Template>
-                            <ControlTemplate TargetType="ItemsControl">
-                                <ScrollViewer Style="{StaticResource PullDownScrollViewer}" 
-                                              HorizontalScrollBarVisibility="Disabled"
-                                              ManipulationMode="Control">
-                                    <ItemsPresenter/>
-                                </ScrollViewer>
-                            </ControlTemplate>
-                        </ItemsControl.Template>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel Orientation="Vertical" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding}" Height="480" Width="480" Stretch="None" Margin="0,0,0,12"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Grid>
-            </phone:PivotItem>
-        </phone:Pivot>
+        <hompus:PullDownToRefreshPanel x:Name="refreshPanel"
+                                        RefreshRequested="refreshPanelRefreshRequested" 
+                                        PullThreshold="200" 
+                                        VerticalAlignment="Stretch" />
+        <ItemsControl x:Name="imageList"
+                        ItemsSource="{Binding ElementName=Page, Path=Images}">
+            <ItemsControl.Template>
+                <ControlTemplate TargetType="ItemsControl">
+                    <ScrollViewer Style="{StaticResource PullDownScrollViewer}" 
+                                    HorizontalScrollBarVisibility="Disabled">
+                        <ItemsPresenter/>
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Image Source="{Binding}" Height="480" Width="480" Stretch="None" Margin="0,0,0,12" Tap="ImageOnTap"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 
 </phone:PhoneApplicationPage>

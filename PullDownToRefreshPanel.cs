@@ -41,7 +41,7 @@ namespace Hompus.PullDownToRefreshDemo
         private const string ReadyToReleaseVisualState = "ReadyToRelease";
         private const string RefreshingVisualState = "Refreshing";
         private const string NoVerticalCompression = "NoVerticalCompression";
-        private const string CompressionTop = "CompressionTop";
+        private const string CompressionBottom = "CompressionBottom";
 
         #endregion
 
@@ -319,7 +319,7 @@ namespace Hompus.PullDownToRefreshDemo
         {
             switch (e.NewState.Name)
             {
-                case CompressionTop:
+                case CompressionBottom:
                     this.isCompressed = true;
                     this.StartMeasuring();
 
@@ -386,7 +386,7 @@ namespace Hompus.PullDownToRefreshDemo
         /// </summary>
         private void UpdateControl()
         {
-            double difference = this.currentPosition.Y - this.initialPoint.Y;
+            double difference = this.initialPoint.Y - this.currentPosition.Y;
 
             if (difference > this.PullThreshold)
             {
